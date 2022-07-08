@@ -1,10 +1,5 @@
 ##install and load packages
-package_list <- c("sf","raster","dplyr","tmap","exactextractr","geosphere","tidyverse")
-new.packages <- package_list[!(package_list %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-for(p in package_list) {
-  library(p, character.only=T)
-}
+pacman::p_load(sf,raster,dplyr, tmap, exactextractr, geosphere, tidyverse)
 
 ################################################################################
 #Basics: How to read/clean it
@@ -97,35 +92,29 @@ cities<-read.csv(paste0("data-raw/tz.csv")) %>%
 plot(st_geometry(sf))
 plot(st_geometry(cities), add=TRUE, col="red")
 
-sf_cent <- sf %>% st_centroid() %>% st_set_crs(4326)
+##now let's compute distance between the centroids of each region and Dar.
+dar <- cities %>% filter(admin_name == "Dar es Salaam") %>% st_transform(21037)
 
-dist_all <- NULL
-st_distance(sf_cent, cities) %>%
+##now let's calculate distance to dar es salaam from each region
+sf_cent <- sf %>% st_centroid() %>% st_transform(21037)
+
+dist_all <- st_distance(sf_cent, dar) %>%
   as_tibble() %>%
-  mutate(OBJECTID = sf$OBJECTID) %>%
-  gather(v, value, -OBJECTID) %>%
-  mutate(value = as.numeric(value)) %>%
-  group_by(OBJECTID) %>%
-  summarise(dist = min(value)) %>%
-  mutate(keyword = 'dist_city') %>%
-  bind_rows(dist_all, .) -> dist_all  
+  mutate(DHSREGEN = sf$DHSREGEN) %>%
+  mutate(dist = as.numeric(value)/1000)
 
-sf <- left_join(sf,dist_all , by="OBJECTID")
+sf <- left_join(sf, dist_all , by="DHSREGEN")
 
 tmap_mode("view")
 mymap <- tm_shape(sf)+
   tm_fill("dist",
           palette="OrRd",
           style="quantile",
-          title=paste0("Distance to the closest city"),
+          title=paste0("Distance to Dar"),
           legend.reverse = TRUE) +
   tm_shape(sf) + tm_borders(lwd=0.1) +
-  tm_shape(cities) + tm_dots()
-  tmap_options(check.and.fix = TRUE)
+  tm_shape(dar) + tm_dots()
 mymap
 
 tmap_save(tm = mymap,
-          filename = paste0("maps/pop_by_region.png"))
-
-
-
+          filename = paste0("maps/dist_to_dar.png"))
