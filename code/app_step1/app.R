@@ -3,9 +3,9 @@ pacman::p_load(sf,raster,dplyr,tmap,exactextractr,geosphere,
 
 
 # load datasets
-sf <- st_read("data-raw/sdr_subnational_boundaries2.shp")
+sf <- st_read(here("data-raw/sdr_subnational_boundaries2.shp"))
 ##read DHS data
-dhs_data <- read_csv("data-raw/dhs_indicators.csv")
+dhs_data <- read_csv(here("data-raw/dhs_indicators.csv"))
 
 ##merge
 sf <- sf %>% left_join(., dhs_data, by="DHSREGEN")
