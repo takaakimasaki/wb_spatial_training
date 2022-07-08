@@ -1,0 +1,33 @@
+city,lat,lng,country,iso2,admin_name,capital,population,population_proper
+Dar es Salaam,-6.8000,39.2833,Tanzania,TZ,Dar es Salaam,primary,6698000,4364541
+Arusha,-3.3667,36.6833,Tanzania,TZ,Arusha,admin,416442,416442
+Dodoma,-6.1835,35.7460,Tanzania,TZ,Dodoma,primary,410956,410956
+Mwanza,-2.5167,32.9000,Tanzania,TZ,Mwanza,admin,385810,385810
+Mbeya,-8.9000,33.4500,Tanzania,TZ,Mbeya,admin,291649,232062
+Tanga,-5.0667,39.1000,Tanzania,TZ,Tanga,admin,243580,243580
+Morogoro,-6.8242,37.6633,Tanzania,TZ,Morogoro,admin,207000,207000
+Zanzibar,-6.1667,39.2000,Tanzania,TZ,Zanzibar Urban/West,admin,205870,205870
+Sumbawanga,-7.9667,31.6167,Tanzania,TZ,Rukwa,admin,147483,147483
+Moshi,-3.3349,37.3404,Tanzania,TZ,Kilimanjaro,admin,144739,144739
+Kigoma,-4.8833,29.6333,Tanzania,TZ,Kigoma,admin,135234,135234
+Tabora,-5.0167,32.8000,Tanzania,TZ,Tabora,admin,127880,127880
+Iringa,-7.7700,35.6900,Tanzania,TZ,Iringa,admin,111820,94760
+Shinyanga,-3.6619,33.4231,Tanzania,TZ,Shinyanga,admin,107362,80226
+Musoma,-1.5069,33.8042,Tanzania,TZ,Mara,admin,103497,103497
+Bukoba,-1.3333,31.8167,Tanzania,TZ,Kagera,admin,100504,70628
+Songea,-10.6833,35.6500,Tanzania,TZ,Ruvuma,admin,99961,99961
+Mtwara,-10.2736,40.1828,Tanzania,TZ,Mtwara,admin,92602,92602
+Mpanda,-6.3436,31.0694,Tanzania,TZ,Katavi,admin,73338,73338
+Singida,-4.8186,34.7506,Tanzania,TZ,Singida,admin,62432,33067
+Chake Chake,-5.2395,39.7700,Tanzania,TZ,Pemba South,admin,49959,21686
+Njombe,-9.3296,34.7700,Tanzania,TZ,Njombe,admin,46724,37311
+Lindi,-9.9969,39.7144,Tanzania,TZ,Lindi,admin,41549,41549
+Babati,-4.2117,35.7475,Tanzania,TZ,Manyara,admin,30975,30975
+Wete,-5.0567,39.7281,Tanzania,TZ,Pemba North,admin,26450,26450
+Kibaha,-6.7586,38.9289,Tanzania,TZ,Coast,admin,23050,23050
+Mkokotoni,-5.8800,39.2731,Tanzania,TZ,Zanzibar North,minor,2572,2572
+Geita,-2.8714,32.2294,Tanzania,TZ,Geita,admin,1536,1536
+Bariadi,-2.8000,33.9833,Tanzania,TZ,Simiyu,admin,,
+Mahonda,-5.9897,39.2519,Tanzania,TZ,Zanzibar North,admin,,
+Vwawa,-9.1081,32.9347,Tanzania,TZ,Mbeya,admin,,
+Koani,-6.1333,39.2833,Tanzania,TZ,Zanzibar Central/South,admin,,
