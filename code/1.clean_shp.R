@@ -1,5 +1,5 @@
-
-package_list <- c("sf","raster","dplyr","tmap","exactextractr","geosphere")
+##install and load packages
+package_list <- c("sf","raster","dplyr","tmap","exactextractr","geosphere","tidyverse")
 new.packages <- package_list[!(package_list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 for(p in package_list) {
@@ -9,66 +9,74 @@ for(p in package_list) {
 ################################################################################
 #Basics: How to read/clean it
 #read shapefile
-sf <- st_read("data-raw/Kondoa EAs_EUTF/Kondoa_EAs.shp")
+sf <- st_read("data-raw/sdr_subnational_boundaries2.shp")
 
-#check if the shapefile is valid
-sf::st_is_valid(sf)
-
-#this shapefile is not valid. To make it valid:
-sf <- st_make_valid(sf)
+#let's see what's in this file
+sf
 
 #map it
 tmap_mode("view")
-tm_shape(sf) + tm_borders() + tmap_options(check.and.fix = TRUE) 
+tm_shape(sf) + tm_borders() 
+
+#let's save csv file of the attribute table in the shapefile
+sf %>% st_drop_geometry() %>% write.csv("data-raw/sdr_subnational_boundaries2.csv")
 
 ################################################################################
-#how to filter shapefile by characteristics
-sf_atta <- sf %>% filter(Kijiji_Mta=="Atta")
-tm_shape(sf) + tm_borders() + tm_shape(sf_atta) + tm_fill(col="red") + tmap_options(check.and.fix = TRUE) 
+#how to merge data into sf
+##read DHS data
+dhs_data <- read_csv("data-raw/dhs_indicators.csv")
 
-#how to merge polygons by group
-Kijiji_Mta <- sf %>% group_by(Kijiji_Mta) %>% summarize(Kijiji_M_1 = mean(Kijiji_M_1), na.rm=T)
-tm_shape(Kijiji_Mta) + tm_borders() + tmap_options(check.and.fix = TRUE) 
+##merge
+sf <- sf %>% left_join(., dhs_data, by="DHSREGEN")
+
+##make sure that the data was successfully merged
+view(sf)
+
+################################################################################
+#some examples of how to manipulate shapefile
+##how to filter shapefile by characteristics
+sf_zanzibar <- sf %>% 
+  filter(DHSREGEN=="Kaskazini Pemba" | DHSREGEN=="Kaskazini Unguja" | DHSREGEN=="Kusini Pemba" | DHSREGEN=="Kusini Unguja" | DHSREGEN=="Mjini Magharibi")
+tm_shape(sf_zanzibar) + tm_borders() 
+
+##how to merge polygons by group
+sf_zanzibar <- sf_zanzibar %>%
+  mutate(zanzibar = 1)
+sf_zanzibar_one <- sf_zanzibar %>% group_by(zanzibar) %>% summarize(zanzibar = mean(zanzibar), na.rm=T)
+tm_shape(sf_zanzibar_one) + tm_borders() 
 
 ################################################################################
 #Basics: How to match with another dataset
 ##crop and mask raster data
+
+##load WorldPop population data for the entire country of Tanzania
 pop <- raster("data-raw/tza_ppp_2020_constrained.tif")
-pop <- pop %>% crop(., sf) %>% mask(., sf)
 
-tmap_mode("plot")
-mymap <- tm_shape(pop, bbox=extent(sf))+
-  tm_raster(labels(pop),
-            palette="OrRd",
-            style="quantile",
-            title=paste0("Population from WorldPop"),
-            legend.reverse = TRUE) +
-  tm_shape(Kijiji_Mta) + tm_borders() +
-  tmap_options(check.and.fix = TRUE)
+##let's crop and mask WorldPop population data for Zanzibar only
+pop_zanzibar <- pop %>% crop(., sf_zanzibar) %>% mask(., sf_zanzibar)
 
-tmap_save(tm = mymap,
-          filename = paste0("maps/pop.png"))
+plot(st_geometry(sf))
+plot(pop, add=TRUE)
+plot(st_geometry(sf_zanzibar))
+plot(pop_zanzibar, add=TRUE)
 
-##extract road network in Kondoa
-road <- st_read(paste0("data-raw/tanzania_gis_osm_paved.shp")) %>% filter(fclass=="primary" | fclass=="secondary")
-road_kondoa <- st_join(road, sf) %>% filter(!is.na(OBJECTID))
-mymap <- tm_shape(pop, bbox=extent(sf))+
-                   tm_raster(labels(pop),
-                   palette="OrRd",
-                   style="quantile",
-                   title=paste0("Population from WorldPop"),
-                   legend.reverse = TRUE) +
-  tm_shape(road_kondoa) + tm_lines(col="blue", lwd=2, title.lwd = "Road network") +
-  tm_shape(Kijiji_Mta) + tm_borders() +
-  tmap_options(check.and.fix = TRUE)
+##line data: extract road network
+road <- st_read(paste0("data-raw/tanzania_gis_osm_paved.shp")) %>% 
+  filter(fclass=="primary" | fclass=="secondary")
 
-tmap_save(tm = mymap,
-          filename = paste0("maps/road.png"))
+road_zanzibar <- st_join(road, sf_zanzibar) %>% filter(!is.na(zanzibar))
 
-##compute total population by EA based on WorldPop raster data
-pop_by_ea <- exact_extract(pop,sf, fun = "sum") %>% as.data.frame() 
-names(pop_by_ea) <- c("pop1")
-sf <- cbind(sf,pop_by_ea)
+plot(st_geometry(sf))
+plot(st_geometry(road), add=TRUE, col="blue")
+plot(st_geometry(sf_zanzibar))
+plot(st_geometry(road_zanzibar), add=TRUE, col="blue")
+
+##compute total population by region based on WorldPop raster data
+pop_by_region <- exact_extract(pop, sf, fun = "sum") %>%
+  as.data.frame() 
+
+names(pop_by_region) <- c("pop1")
+sf <- cbind(sf,pop_by_region)
 mymap <- tm_shape(sf)+
   tm_fill("pop1",
             palette="OrRd",
@@ -77,13 +85,17 @@ mymap <- tm_shape(sf)+
             legend.reverse = TRUE) +
   tm_shape(sf) + tm_borders(lwd=0.1) +
   tmap_options(check.and.fix = TRUE)
+
+mymap
 tmap_save(tm = mymap,
-          filename = paste0("maps/pop_by_ea.png"))
+          filename = paste0("maps/pop_by_region.png"))
 
-
-##compute distance to the closest city
+##point data: cities
 cities<-read.csv(paste0("data-raw/tz.csv")) %>% 
   st_as_sf(coords = c('lng', 'lat'),crs=st_crs(4326))
+
+plot(st_geometry(sf))
+plot(st_geometry(cities), add=TRUE, col="red")
 
 sf_cent <- sf %>% st_centroid() %>% st_set_crs(4326)
 
@@ -113,7 +125,7 @@ mymap <- tm_shape(sf)+
 mymap
 
 tmap_save(tm = mymap,
-          filename = paste0("maps/pop_by_ea.png"))
+          filename = paste0("maps/pop_by_region.png"))
 
 
 
