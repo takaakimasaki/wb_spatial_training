@@ -1,3 +1,6 @@
+# to run each line, press the Ctrl+Enter key on windows (or use the Run toolbar button)
+# or press command and return key on mac
+# anything after # (hash) is a comment. They will be ignored when run.
 ##install and load packages
 pacman::p_load(sf,raster, tidyverse, tmap, exactextractr)
 
