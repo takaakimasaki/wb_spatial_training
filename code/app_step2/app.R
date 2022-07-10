@@ -1,5 +1,4 @@
-pacman::p_load(sf,raster,dplyr,tmap,exactextractr,geosphere,
-               paletteer,shiny,here,DT,spdplyr,mapview,shinythemes,leaflet,tidyr)
+pacman::p_load(sf,tidyverse,paletteer,shiny,here,leaflet)
 
 
 # load datasets

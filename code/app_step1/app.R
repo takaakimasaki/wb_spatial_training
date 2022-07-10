@@ -1,5 +1,4 @@
-pacman::p_load(sf,raster,dplyr,tmap,exactextractr,geosphere,
-  paletteer,shiny,here,DT,spdplyr,mapview,shinythemes,leaflet,tidyr)
+pacman::p_load(sf,tidyverse,paletteer,shiny,here,leaflet)
 
 
 # load datasets
@@ -13,7 +12,7 @@ sf_df <-st_drop_geometry(sf) %>% # drop geometry
   gather(.,indicator,value,28:ncol(.)) %>% # wide to long format
   mutate(value=as.numeric(value)) %>% # convert value to numeric
   filter(!is.na(value)) # filter out value that are NA (which used to be character)
-
+selected_variable <- "Children_wasted"
 # ui ----------------------------------------------------------------------
 ui <-fluidPage(
   # Application title
