@@ -1,5 +1,8 @@
+# to run each line, press the Ctrl+Enter key on windows (or use the Run toolbar button)
+# or press command and return key on mac
+# anything after # (hash) is a comment. They will be ignored when run.
 ##install and load packages
-pacman::p_load(sf,raster,dplyr, tmap, exactextractr, geosphere, tidyverse)
+pacman::p_load(sf,raster, tidyverse, tmap, exactextractr)
 
 ################################################################################
 #Basics: How to read/clean it
@@ -37,7 +40,7 @@ tm_shape(sf_zanzibar) + tm_borders()
 ##how to merge polygons by group
 sf_zanzibar <- sf_zanzibar %>%
   mutate(zanzibar = 1)
-sf_zanzibar_one <- sf_zanzibar %>% group_by(zanzibar) %>% summarize(zanzibar = mean(zanzibar), na.rm=T)
+sf_zanzibar_one <- sf_zanzibar %>% group_by(zanzibar) %>% summarize()
 tm_shape(sf_zanzibar_one) + tm_borders() 
 
 ################################################################################
@@ -118,3 +121,4 @@ mymap
 
 tmap_save(tm = mymap,
           filename = paste0("maps/dist_to_dar.png"))
+
