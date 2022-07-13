@@ -24,6 +24,9 @@ sf %>% st_drop_geometry() %>% write.csv("data-raw/sdr_subnational_boundaries2.cs
 ##read DHS data
 dhs_data <- read_csv("data-raw/dhs_indicators.csv")
 
+# view data to find an ID column
+view(dhs_data)
+
 ##merge
 sf <- sf %>% left_join(., dhs_data, by="DHSREGEN")
 
@@ -59,7 +62,7 @@ plot(st_geometry(sf_zanzibar))
 plot(pop_zanzibar, add=TRUE)
 
 ##line data: extract road network
-road <- st_read(paste0("data-raw/tanzania_gis_osm_paved.shp")) %>% 
+road <- st_read("data-raw/tanzania_gis_osm_paved.shp") %>% 
   filter(fclass=="primary" | fclass=="secondary")
 
 road_zanzibar <- st_join(road, sf_zanzibar) %>% filter(!is.na(zanzibar))
@@ -70,26 +73,24 @@ plot(st_geometry(sf_zanzibar))
 plot(st_geometry(road_zanzibar), add=TRUE, col="blue")
 
 ##compute total population by region based on WorldPop raster data
-pop_by_region <- exact_extract(pop, sf, fun = "sum") %>%
-  as.data.frame() 
+pop_by_region <- sf %>% 
+  mutate(pop1=exact_extract(pop, ., fun = "sum"))
 
-names(pop_by_region) <- c("pop1")
-sf <- cbind(sf,pop_by_region)
-mymap <- tm_shape(sf)+
+mymap <- tm_shape(pop_by_region)+
   tm_fill("pop1",
             palette="OrRd",
             style="quantile",
-            title=paste0("Population from WorldPop"),
+            title="Population from WorldPop",
             legend.reverse = TRUE) +
-  tm_shape(sf) + tm_borders(lwd=0.1) +
+  tm_shape(pop_by_region) + tm_borders(lwd=0.1) +
   tmap_options(check.and.fix = TRUE)
 
 mymap
 tmap_save(tm = mymap,
-          filename = paste0("maps/pop_by_region.png"))
+          filename = "maps/pop_by_region.png")
 
 ##point data: cities
-cities<-read.csv(paste0("data-raw/tz.csv")) %>% 
+cities<-read.csv("data-raw/tz.csv") %>% 
   st_as_sf(coords = c('lng', 'lat'),crs=st_crs(4326))
 
 plot(st_geometry(sf))
@@ -113,12 +114,12 @@ mymap <- tm_shape(sf)+
   tm_fill("dist",
           palette="OrRd",
           style="quantile",
-          title=paste0("Distance to Dar"),
+          title="Distance to Dar",
           legend.reverse = TRUE) +
   tm_shape(sf) + tm_borders(lwd=0.1) +
   tm_shape(dar) + tm_dots()
 mymap
 
 tmap_save(tm = mymap,
-          filename = paste0("maps/dist_to_dar.png"))
+          filename = "maps/dist_to_dar.png")
 
