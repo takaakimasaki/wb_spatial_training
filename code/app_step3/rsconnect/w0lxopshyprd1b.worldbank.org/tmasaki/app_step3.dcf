@@ -1,0 +1,13 @@
+name: app_step3
+title: app_step3
+username: tmasaki
+account: tmasaki
+server: w0lxopshyprd1b.worldbank.org
+hostUrl: http://w0lxopshyprd1b.worldbank.org:3939/__api__
+appId: 980
+bundleId: 46454
+url: http://w0lxopshyprd1b.worldbank.org:3939/content/6257334c-5741-4460-9679-9baae572892e/
+when: 1658890529.45115
+lastSyncTime: 1658890529.45115
+asMultiple: FALSE
+asStatic: FALSE

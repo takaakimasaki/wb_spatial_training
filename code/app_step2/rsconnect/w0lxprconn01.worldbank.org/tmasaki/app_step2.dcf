@@ -1,0 +1,13 @@
+name: app_step2
+title: app_step2
+username: tmasaki
+account: tmasaki
+server: w0lxprconn01.worldbank.org
+hostUrl: http://w0lxprconn01.worldbank.org:3939/__api__
+appId: 1154
+bundleId: 8215
+url: http://w0lxprconn01.worldbank.org:3939/content/649e0fc9-8f4c-4dd4-9402-714f281086be/
+when: 1657891953.75691
+lastSyncTime: 1657891953.75691
+asMultiple: FALSE
+asStatic: FALSE
